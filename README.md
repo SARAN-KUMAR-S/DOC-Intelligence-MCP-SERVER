@@ -46,7 +46,10 @@ To add this tool to your Claude Desktop client, edit your configuration file:
 * **Windows Path:** `%APPDATA%\Claude\claude_desktop_config.json`
 * **macOS Path:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-Add the following JSON snippet under the `"mcpServers"` key:
+Choose one of the integration methods below:
+
+### Option 1: Run directly from GitHub (Quickest, no cloning required)
+This runs the MCP server directly from GitHub. Add this JSON snippet under `"mcpServers"`:
 
 ```json
 {
@@ -68,6 +71,29 @@ Add the following JSON snippet under the `"mcpServers"` key:
 
 > [!IMPORTANT]
 > Replace `YOUR_SERPER_API_KEY` and `YOUR_GROQ_API_KEY` with your actual credentials.
+
+### Option 2: Clone and Run Locally (Best for making code changes)
+If you cloned the repository locally, create a `.env` file containing your API keys in the root directory, and configure the path under `"mcpServers"`:
+
+```json
+{
+  "mcpServers": {
+    "docs-intelligence": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "ABSOLUTE_PATH_TO_CLONED_FOLDER",
+        "run",
+        "mcp_server.py"
+      ]
+    }
+  }
+}
+```
+> [!NOTE]
+> Replace `ABSOLUTE_PATH_TO_CLONED_FOLDER` with the full path where you cloned this repository (e.g. `C:\\Users\\Username\\DOC-Intelligence-MCP-SERVER`). The local `.env` file in that folder will be loaded automatically.
+
+---
 
 Restart Claude Desktop, and the `get_docs` tool will be ready to use!
 

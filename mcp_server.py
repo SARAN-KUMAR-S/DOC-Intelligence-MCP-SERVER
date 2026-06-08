@@ -102,6 +102,8 @@ async def fetch_url(url: str):
         return cleaned_response
 
 
+from typing import Literal
+
 # Step3: Read documentation and write code accordingly
 docs_urls = {
     "langchain": "python.langchain.com/docs",
@@ -111,17 +113,17 @@ docs_urls = {
 }
 
 @mcp.tool()
-async def get_docs(query: str, library: str):
+async def get_docs(
+    query: str, 
+    library: Literal["uv", "openai", "langchain", "llama-index"]
+):
     """
-    Search the latest docs for a given query and library.
-    Supports langchain, openai, llama-index and uv.
+    Search the latest official documentation to answer developer queries.
+    Use this tool whenever the user asks questions about uv, openai, langchain, or llama-index.
 
     Args:
-        query: The query to search for (e.g. "Publish a package with UV")
-        library: The library to search in (e.g. "uv")
-
-    Returns:
-        Summarized text from the docs with source links.
+        query: The search terms or query (e.g. "How to use publish a package with uv on gitlab")
+        library: The specific library/technology to search for.
     """
     if library not in docs_urls:
         raise ValueError(f"Library {library} not supported by this tool")

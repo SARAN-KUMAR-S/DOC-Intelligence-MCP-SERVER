@@ -41,11 +41,12 @@ uv run client.py
 
 ## Claude Desktop Integration
 
-To add this tool to Claude, edit your `claude_desktop_config.json` configuration file:
+To add this tool to your Claude Desktop client, edit your configuration file:
 
-**Windows Path:** `%APPDATA%\Claude\claude_desktop_config.json`
+* **Windows Path:** `%APPDATA%\Claude\claude_desktop_config.json`
+* **macOS Path:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-Add the server config under `mcpServers`:
+Add the following JSON snippet under the `"mcpServers"` key:
 
 ```json
 {
@@ -54,18 +55,19 @@ Add the server config under `mcpServers`:
       "command": "uv",
       "args": [
         "run",
-        "--with",
-        "git+https://github.com/SARAN-KUMAR-S/DOC-Intelligence-MCP-SERVER.git",
-        "mcp_server.py"
+        "https://raw.githubusercontent.com/SARAN-KUMAR-S/DOC-Intelligence-MCP-SERVER/main/mcp_server.py"
       ],
       "env": {
-        "SERPER_API_KEY": "their_serper_key_here",
-        "GROQ_API_KEY": "their_groq_key_here"
+        "SERPER_API_KEY": "YOUR_SERPER_API_KEY",
+        "GROQ_API_KEY": "YOUR_GROQ_API_KEY"
       }
     }
   }
 }
-
 ```
 
-Restart Claude Desktop, and you will see the `get_docs` tool available!
+> [!IMPORTANT]
+> Replace `YOUR_SERPER_API_KEY` and `YOUR_GROQ_API_KEY` with your actual credentials.
+
+Restart Claude Desktop, and the `get_docs` tool will be ready to use!
+

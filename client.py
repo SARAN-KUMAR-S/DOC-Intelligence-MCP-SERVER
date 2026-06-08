@@ -25,7 +25,7 @@ async def main():
             library = "langchain"
             res = await session.call_tool("get_docs", arguments={"query": query, "library": library})
 
-            context = res.content
+            context = res.content[0].text[:3000] if res.content else ""
             user_prompt_with_context = f"Query: {query}, Context {context}"
 
             # LLM function to create a human readable response

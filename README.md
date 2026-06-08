@@ -53,14 +53,19 @@ Add the server config under `mcpServers`:
     "docs-intelligence": {
       "command": "uv",
       "args": [
-        "--directory",
-        "C:/Users/SARAN KUMAR/OneDrive/Desktop/MCP SERVER -1",
         "run",
+        "--with",
+        "git+https://github.com/SARAN-KUMAR-S/DOC-Intelligence-MCP-SERVER.git",
         "mcp_server.py"
-      ]
+      ],
+      "env": {
+        "SERPER_API_KEY": "their_serper_key_here",
+        "GROQ_API_KEY": "their_groq_key_here"
+      }
     }
   }
 }
+
 ```
 
 Restart Claude Desktop, and you will see the `get_docs` tool available!

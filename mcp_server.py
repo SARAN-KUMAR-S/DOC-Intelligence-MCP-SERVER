@@ -1,28 +1,69 @@
-# Main task: Create AI Webscraping tool
-# Step1: Search the web
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "fastmcp>=3.4.2",
+#     "groq>=1.4.0",
+#     "httpx>=0.28.1",
+#     "python-dotenv>=1.2.2",
+#     "trafilatura>=2.1.0",
+# ]
+# ///
 
-import http.client
 import json
 import os
 import httpx
 import asyncio
+import trafilatura
 from dotenv import load_dotenv
 from fastmcp import FastMCP
-
-from utils import clean_html_to_txt, get_response_from_llm
+from groq import Groq
 
 load_dotenv()
 
+# Helper utilities (formerly in utils.py)
+def clean_html_to_txt(html):
+    try:  
+        extracted = trafilatura.extract(
+            html,
+            include_comments=False,
+            include_tables=False,
+            favor_recall=False,
+        )
+        if extracted:
+            return extracted
+    except Exception as e:
+        raise e
 
+def get_response_from_llm(user_prompt, system_prompt, model):
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY is not set in the environment or .env file. Please define GROQ_API_KEY in your .env file.")
+
+    # Map invalid/openai models to a valid Groq model (e.g., llama-3.1-8b-instant)
+    if "openai" in model or "gpt-oss" in model:
+        model = "llama-3.1-8b-instant"
+
+    groq_client = Groq(api_key=api_key)
+    chat_completion = groq_client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            model=model,
+        )
+    return chat_completion.choices[0].message.content
+
+
+# MCP Server definition
 mcp = FastMCP("docs")
 
-SERPER_URL= "https://google.serper.dev/search"
+SERPER_URL = "https://google.serper.dev/search"
 
 async def search_web(query: str) -> dict | None:
     payload = json.dumps({"q": query, "num": 2})
     headers = {
-    'X-API-KEY': os.getenv("SERPER_API_KEY"),
-    'Content-Type': 'application/json'
+        'X-API-KEY': os.getenv("SERPER_API_KEY"),
+        'Content-Type': 'application/json'
     }  
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -33,7 +74,6 @@ async def search_web(query: str) -> dict | None:
 
 
 # Step2: Open official documentation
-
 async def fetch_url(url: str):
     async with httpx.AsyncClient() as client:
         response = await client.get(url, timeout=30.0)
@@ -63,7 +103,6 @@ async def fetch_url(url: str):
 
 
 # Step3: Read documentation and write code accordingly
-
 docs_urls = {
     "langchain": "python.langchain.com/docs",
     "llama-index": "docs.llamaindex.ai/en/stable",

@@ -11,3 +11,7 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "trafilatura>=2.1.0",
 ]
+
+[tool.setuptools]
+py-modules = ["mcp_server", "utils"]
+

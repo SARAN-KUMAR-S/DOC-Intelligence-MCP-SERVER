@@ -73,33 +73,39 @@ async def search_web(query: str) -> dict | None:
         return response.json()
 
 
+import sys
+
 # Step2: Open official documentation
 async def fetch_url(url: str):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, timeout=30.0)
-        response.raise_for_status()
-        
-        # Strip HTML tags and extract readable text
-        extracted_text = clean_html_to_txt(response.text)
-        text_to_process = extracted_text if extracted_text else response.text
-        
-        system_prompt = "You are an AI Web scraper. Only return valid text, remove and clean every other HTML component that is not required."
-               
-        # Split text into chunks of 4000 characters
-        chunk_size = 4000
-        text_chunks = [text_to_process[i:i+chunk_size] for i in range(0, len(text_to_process), chunk_size)]
-        
-        cleaned_parts = []
-        for chunk in text_chunks:
-            cleaned_chunk = get_response_from_llm(
-                user_prompt=chunk, 
-                system_prompt=system_prompt, 
-                model="openai/gpt-oss-20b"
-            )
-            cleaned_parts.append(cleaned_chunk)
-        
-        cleaned_response = "".join(cleaned_parts)
-        return cleaned_response
+    try:
+        async with httpx.AsyncClient(follow_redirects=True) as client:
+            response = await client.get(url, timeout=30.0)
+            response.raise_for_status()
+            
+            # Strip HTML tags and extract readable text
+            extracted_text = clean_html_to_txt(response.text)
+            text_to_process = extracted_text if extracted_text else response.text
+            
+            system_prompt = "You are an AI Web scraper. Only return valid text, remove and clean every other HTML component that is not required."
+                   
+            # Split text into chunks of 4000 characters
+            chunk_size = 4000
+            text_chunks = [text_to_process[i:i+chunk_size] for i in range(0, len(text_to_process), chunk_size)]
+            
+            cleaned_parts = []
+            for chunk in text_chunks:
+                cleaned_chunk = get_response_from_llm(
+                    user_prompt=chunk, 
+                    system_prompt=system_prompt, 
+                    model="openai/gpt-oss-20b"
+                )
+                cleaned_parts.append(cleaned_chunk)
+            
+            cleaned_response = "".join(cleaned_parts)
+            return cleaned_response
+    except Exception as e:
+        print(f"Error fetching URL {url}: {e}", file=sys.stderr)
+        return None
 
 
 from typing import Literal

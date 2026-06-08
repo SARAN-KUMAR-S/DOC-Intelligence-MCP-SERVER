@@ -21,8 +21,8 @@ async def main():
             tools_response = await session.list_tools()
             print("Available tools:", [t.name for t in tools_response.tools])
 
-            query = "How to use publish a package with uv on gitlab"
-            library = "uv"
+            query = "How to use ChatOpenAI"
+            library = "langchain"
             res = await session.call_tool("get_docs", arguments={"query": query, "library": library})
 
             context = res.content
